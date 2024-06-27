@@ -2,10 +2,7 @@
 
 use std::str::FromStr;
 
-use crate::{
-    error::MyParseError,
-    parse::{peek_then_cut, Parse},
-};
+use crate::parse::{peek_then_cut, Parse, ParseResult, RawSpan};
 use bigdecimal::BigDecimal;
 use derive_more::Display;
 use nom::{
@@ -14,17 +11,11 @@ use nom::{
     character::complete::multispace0,
     error::context,
     sequence::{preceded, terminated, tuple},
-    IResult, Parser,
+    Parser,
 };
-use nom_locate::LocatedSpan;
 use serde::{Deserialize, Serialize};
 
-// 定义类型，用于包装输入str
-pub type RawSpan<'a> = LocatedSpan<&'a str>;
-// 定义解析结果类型，错误类型用自定义的MyParseError
-pub type ParseResult<'a, T> = IResult<RawSpan<'a>, T, MyParseError<'a>>;
 /// 支持的值类型枚举
-
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, Display)]
 pub enum ParseValue {
     Number(BigDecimal), // 小数
@@ -80,14 +71,13 @@ mod test {
     #[test]
     fn test_parse_string_value() {
         let s = "'兽兽',18".to_string();
-       let result = ParseValue::parse_from_raw(s.as_str());
-       println!("result:{:?}",result);
+        let result = ParseValue::parse_from_raw(s.as_str());
+        println!("result:{:?}", result);
     }
-
 
     #[test]
     fn test_parse_number_value() {
-       let result = ParseValue::parse_from_raw("1234567");
-       println!("result:{:?}",result);
+        let result = ParseValue::parse_from_raw("1234567");
+        println!("result:{:?}", result);
     }
 }

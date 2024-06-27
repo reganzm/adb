@@ -46,9 +46,5 @@ fn main() -> miette::Result<()> {
         .into_diagnostic()
         .wrap_err("Saving REPL history")?;
 
-
-
-
-
     Ok(())
 }
