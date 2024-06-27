@@ -98,23 +98,23 @@ impl<'a> Parse<'a> for CreateStatement {
                 ),
                 multispace1,
                 column_definition,
-            ).context("创建表"),
+            )
+            .context("创建表"),
             |(table, columns)| Self { table, columns },
         )(i)
     }
 }
 
-
 #[cfg(test)]
-mod test{
+mod test {
     use crate::parse::Parse;
 
     use super::CreateStatement;
 
     #[test]
-    fn test_create_table(){
+    fn test_create_table() {
         let create_table = "create table student (name string,age int)";
         let result = CreateStatement::parse_from_raw(&create_table);
-        println!("result:{:#?}",result);
+        println!("result:{:#?}", result);
     }
 }

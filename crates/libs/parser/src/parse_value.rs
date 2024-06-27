@@ -17,14 +17,14 @@ use serde::{Deserialize, Serialize};
 
 /// 支持的值类型枚举
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, Display)]
-pub enum ParseValue {
+pub enum Value {
     Number(BigDecimal), // 小数
     String(String),     // 字符串
 }
 
-/// 为ParsedValue实现Parse特征
-impl<'a> Parse<'a> for ParseValue {
-    fn parse(input: RawSpan<'_>) -> ParseResult<'_, ParseValue> {
+/// 为Value实现Parse特征
+impl<'a> Parse<'a> for Value {
+    fn parse(input: RawSpan<'_>) -> ParseResult<'_, Value> {
         context(
             "值解析",
             preceded(
@@ -39,14 +39,14 @@ impl<'a> Parse<'a> for ParseValue {
 }
 
 /// 解析单引号字符串值
-fn parse_string_value(input: RawSpan<'_>) -> ParseResult<'_, ParseValue> {
+fn parse_string_value(input: RawSpan<'_>) -> ParseResult<'_, Value> {
     // 使用nom::error::context上下文包裹
     let (remaining, (_, str_value, _)) = context(
         "字符串字面量解析",
         tuple((
             tag("'"),
             // take_until不消耗最后一个字符，属于前闭后开
-            take_until("'").map(|r: RawSpan| ParseValue::String(r.fragment().to_string())),
+            take_until("'").map(|r: RawSpan| Value::String(r.fragment().to_string())),
             tag("'"),
         )),
     )(input)?;
@@ -54,13 +54,13 @@ fn parse_string_value(input: RawSpan<'_>) -> ParseResult<'_, ParseValue> {
 }
 
 /// 解析数值
-fn parse_number_value(input: RawSpan<'_>) -> ParseResult<'_, ParseValue> {
+fn parse_number_value(input: RawSpan<'_>) -> ParseResult<'_, Value> {
     let (remaining, digits) =
         context("数值字面量解析", take_while(|c: char| c.is_numeric()))(input)?;
     let digits = digits.fragment();
     Ok((
         remaining,
-        ParseValue::Number(BigDecimal::from_str(digits).unwrap()),
+        Value::Number(BigDecimal::from_str(digits).unwrap()),
     ))
 }
 
@@ -71,13 +71,13 @@ mod test {
     #[test]
     fn test_parse_string_value() {
         let s = "'兽兽',18".to_string();
-        let result = ParseValue::parse_from_raw(s.as_str());
+        let result = Value::parse_from_raw(s.as_str());
         println!("result:{:?}", result);
     }
 
     #[test]
     fn test_parse_number_value() {
-        let result = ParseValue::parse_from_raw("1234567");
+        let result = Value::parse_from_raw("1234567");
         println!("result:{:?}", result);
     }
 }
