@@ -1,9 +1,12 @@
+use aparser::{
+    ast::{parse_sql_command, SqlCommand},
+    error::FormattedError,
+};
 use miette::{Context, GraphicalReportHandler, IntoDiagnostic};
 use rustyline::{
     completion::FilenameCompleter, error::ReadlineError, highlight::Highlighter, Completer,
     CompletionType, Config, Editor, Helper, Hinter, Validator,
 };
-use aparser::{ast::{parse_sql_command, SqlCommand}, error::FormattedError};
 
 const HISTORY_FILE: &str = "./history.txt";
 #[derive(Completer, Helper, Hinter, Validator)]
@@ -54,7 +57,7 @@ fn main() -> miette::Result<()> {
 
 fn display(res: Result<SqlCommand, FormattedError>) {
     match res {
-        Ok(exec_res) => println!("{:#?}",exec_res),
+        Ok(exec_res) => println!("{:#?}", exec_res),
         Err(e) => {
             let mut s = String::new();
             GraphicalReportHandler::new()
