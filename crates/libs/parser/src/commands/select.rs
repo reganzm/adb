@@ -1,11 +1,11 @@
 //! 查询命令解析
 
+use crate::parse::{comma_sep, identifier, Parse};
 use nom::{
     bytes::complete::tag_no_case, character::complete::multispace1, error::context, sequence::tuple,
 };
 use nom_supreme::ParserExt;
 use serde::{Deserialize, Serialize};
-use crate::parse::{comma_sep, identifier, Parse};
 
 /// 查询命令结构体
 #[derive(Debug, Clone, PartialEq, Default, Hash, Serialize, Deserialize)]
@@ -47,8 +47,8 @@ impl<'a> Parse<'a> for SelectStatement {
 
 #[cfg(test)]
 mod test {
-    use crate::parse::Parse;
     use super::SelectStatement;
+    use crate::parse::Parse;
 
     #[test]
     fn test_select_statement() {
